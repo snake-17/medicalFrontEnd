@@ -2,15 +2,25 @@ type ActionCardProps = {
   title: string;
   description: string;
   buttonText: string;
+  sizeClass: string;
 };
 
-function ActionCard({ title, description, buttonText }: ActionCardProps) {
+function ActionCard({
+  title,
+  description,
+  buttonText,
+  sizeClass,
+}: ActionCardProps) {
   return (
-    <div className="card shadow">
+    <div className="card shadow mt-5">
       <div className="card-body text-center">
-        <h5 className="card-title">{title}</h5>
+        <h1 className={`${sizeClass} text-uppercase`}>{title}</h1>
         <p className="card-text">{description}</p>
         <button className="btn btn-primary">{buttonText}</button>
+        <hr
+          className="mx-auto"
+          style={{ width: "50px", borderTop: "3px solid blue" }}
+        />
       </div>
     </div>
   );

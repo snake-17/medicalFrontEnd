@@ -1,6 +1,6 @@
 function Footer() {
   return (
-    <footer className="bg-dark text-secondary py-4 mt-auto">
+    <footer className="bg-dark text-secondary py-4 mt-auto fixed-bottom p-3">
       <div className="container">
         <div className="d-flex flex-column flex-md-row justify-content-between align-items-center">
           {/* Lado Izquierdo: Copyright */}
