@@ -3,6 +3,7 @@ type ActionCardProps = {
   description: string;
   buttonText: string;
   sizeClass: string;
+  onActionSignIn?: () => void;
 };
 
 function ActionCard({
@@ -10,13 +11,16 @@ function ActionCard({
   description,
   buttonText,
   sizeClass,
+  onActionSignIn,
 }: ActionCardProps) {
   return (
     <div className="card shadow mt-5">
       <div className="card-body text-center">
         <h1 className={`${sizeClass} text-uppercase`}>{title}</h1>
         <p className="card-text">{description}</p>
-        <button className="btn btn-primary">{buttonText}</button>
+        <button className="btn btn-primary" onClick={onActionSignIn}>
+          {buttonText}
+        </button>
         <hr
           className="mx-auto"
           style={{ width: "50px", borderTop: "3px solid blue" }}

@@ -1,16 +1,12 @@
 import CardWelcome from "../sections/home/CardWelcome";
-import Navbar from "../layout/Navbar";
-import Footer from "../layout/Footer";
 import QuickActions from "../sections/home/QuickActions";
 
 function HomePage() {
   return (
-    <>
-      <Navbar />
+    <div className="container">
       <CardWelcome />
       <QuickActions />
-      <Footer />
-    </>
+    </div>
   );
 }
 export default HomePage;
