@@ -1,36 +1,23 @@
+import { useNavigate } from "react-router-dom";
+import ActionCard from "../sections/home/ActionCard";
 function Reservation() {
+  const navigate = useNavigate();
   return (
-    <div className="container d-flex justify-content-center align-items-center vh-100">
-      <div className="row">
-        <div className="col-sm-6 mb-3 mb-sm-0">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Create and appointment</h5>
-              <p className="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <a href="#" className="btn btn-primary">
-                Go somewhere
-              </a>
-            </div>
-          </div>
-        </div>
-        <div className="col-sm-6">
-          <div className="card">
-            <div className="card-body">
-              <h5 className="card-title">Edit appoinments</h5>
-              <p className="card-text">
-                With supporting text below as a natural lead-in to additional
-                content.
-              </p>
-              <a href="#" className="btn btn-primary">
-                Go somewhere
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div className="container d-flex justify-content-center">
+      <ActionCard
+        title="Edit your appointment"
+        description="s simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+        buttonText="Take an appointment"
+        sizeClass="display-6"
+        onAction={() => navigate("/editappointment")}
+      />
+      <ActionCard
+        title="Create an appointment"
+        description="s simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s"
+        buttonText="settings"
+        sizeClass="display-6"
+        onAction={() => navigate("/availability")}
+      />
     </div>
   );
 }

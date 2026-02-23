@@ -1,4 +1,9 @@
-function RegisterForm() {
+import { Link } from "react-router-dom";
+type RegisterFormProps = {
+  onCancel?: () => void;
+};
+
+function RegisterForm({ onCancel }: RegisterFormProps) {
   return (
     <form>
       <h3 className="card-title text-center mb-4">Sign up</h3>
@@ -54,7 +59,11 @@ function RegisterForm() {
           Check me out
         </label>
         <div className="d-flex justify-content-between mt-4">
-          <button type="button" className="btn btn-secondary">
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={onCancel}
+          >
             Cancel
           </button>
           <button type="submit" className="btn btn-primary">
@@ -62,6 +71,9 @@ function RegisterForm() {
           </button>
         </div>
       </div>
+      <p>
+        do you already have an account? <Link to="/login">Sign in</Link>
+      </p>
     </form>
   );
 }

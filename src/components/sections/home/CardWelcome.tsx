@@ -8,7 +8,7 @@ function CardWelcome() {
       description="Ready to schedule your next session?"
       buttonText="sign in"
       sizeClass="display-3"
-      onActionSignIn={() => navigate("/login")}
+      onAction={() => navigate("/login")}
     />
   );
 }

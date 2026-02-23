@@ -3,7 +3,7 @@ type ActionCardProps = {
   description: string;
   buttonText: string;
   sizeClass: string;
-  onActionSignIn?: () => void;
+  onAction?: () => void;
 };
 
 function ActionCard({
@@ -11,14 +11,14 @@ function ActionCard({
   description,
   buttonText,
   sizeClass,
-  onActionSignIn,
+  onAction,
 }: ActionCardProps) {
   return (
     <div className="card shadow mt-5">
       <div className="card-body text-center">
         <h1 className={`${sizeClass} text-uppercase`}>{title}</h1>
         <p className="card-text">{description}</p>
-        <button className="btn btn-primary" onClick={onActionSignIn}>
+        <button className="btn btn-primary" onClick={onAction}>
           {buttonText}
         </button>
         <hr

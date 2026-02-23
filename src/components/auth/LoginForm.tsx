@@ -1,4 +1,8 @@
-function LoginForm() {
+import { Link } from "react-router-dom";
+type LoginFormProps = {
+  onCancel?: () => void;
+};
+function LoginForm({ onCancel }: LoginFormProps) {
   return (
     <form>
       <h3 className="card-title text-center mb-4">Sign up</h3>
@@ -28,13 +32,16 @@ function LoginForm() {
         />
       </div>
       <div className="d-flex justify-content-between mt-4">
-        <button type="button" className="btn btn-secondary">
+        <button type="button" className="btn btn-secondary" onClick={onCancel}>
           Cancel
         </button>
         <button type="submit" className="btn btn-primary">
           Confirm
         </button>
       </div>
+      <p>
+        don't have an account yet? <Link to="/register">Sign up</Link>
+      </p>
     </form>
   );
 }
