@@ -30,7 +30,7 @@ function RegisterForm() {
 
     try {
       const response = await fetch(
-        "https://tu-api-en-railway.app/api/auth/register",
+        "https://medicalproyect-production.up.railway.app/api/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -107,7 +107,6 @@ function RegisterForm() {
       </div>
 
       <div className="d-flex justify-content-between mt-4">
-        {/* Cambiamos el botón por un Link de react-router-dom */}
         <Link to="/" className="btn btn-secondary">
           Cancel
         </Link>

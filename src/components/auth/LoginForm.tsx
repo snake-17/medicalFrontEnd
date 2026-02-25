@@ -1,11 +1,46 @@
-import { Link } from "react-router-dom";
-type LoginFormProps = {
-  onCancel?: () => void;
-};
-function LoginForm({ onCancel }: LoginFormProps) {
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+
+function LoginForm() {
+  const navigate = useNavigate();
+  const [error, setError] = useState<string | null>(null);
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError(null);
+    try {
+      const response = await fetch("URL", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+      const data = await response.json();
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        navigate("/");
+      } else {
+        setError(data.error || data.message || "Something went wrong");
+      }
+    } catch {
+      setError("Connection error with server");
+    }
+  };
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <h3 className="card-title text-center mb-4">Sign in</h3>
+      {error && <div className="alert alert-danger p-2">{error}</div>}
 
       <div className="mb-3">
         <label htmlFor="exampleInputEmail1" className="form-label">
@@ -13,13 +48,15 @@ function LoginForm({ onCancel }: LoginFormProps) {
         </label>
         <input
           type="email"
+          name="email"
+          value={formData.email}
           className="form-control"
+          placeholder="user@mail.com"
           id="exampleInputEmail1"
           aria-describedby="emailHelp"
+          onChange={handleChange}
+          required
         />
-        <div id="emailHelp" className="form-text">
-          We'll never share your email with anyone else.
-        </div>
       </div>
       <div className="mb-3">
         <label htmlFor="exampleInputPassword1" className="form-label">
@@ -27,14 +64,18 @@ function LoginForm({ onCancel }: LoginFormProps) {
         </label>
         <input
           type="password"
+          name="password"
+          value={formData.password}
           className="form-control"
           id="exampleInputPassword1"
+          onChange={handleChange}
+          required
         />
       </div>
       <div className="d-flex justify-content-between mt-4">
-        <button type="button" className="btn btn-secondary" onClick={onCancel}>
+        <Link to="/" className="btn btn-secondary">
           Cancel
-        </button>
+        </Link>
         <button type="submit" className="btn btn-primary">
           Confirm
         </button>
