@@ -5,7 +5,7 @@ type LoginFormProps = {
 function LoginForm({ onCancel }: LoginFormProps) {
   return (
     <form>
-      <h3 className="card-title text-center mb-4">Sign up</h3>
+      <h3 className="card-title text-center mb-4">Sign in</h3>
 
       <div className="mb-3">
         <label htmlFor="exampleInputEmail1" className="form-label">
