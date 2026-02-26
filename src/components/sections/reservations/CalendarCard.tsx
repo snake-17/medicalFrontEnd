@@ -1,4 +1,8 @@
-function CalendarCard() {
+interface CalendarProps {
+  onDateChange: (date: string) => void;
+}
+
+function CalendarCard({ onDateChange }: CalendarProps) {
   return (
     <div className="col-md-4 mb-4">
       <div className="card shadow-sm">
@@ -7,11 +11,8 @@ function CalendarCard() {
           <input
             type="date"
             className="form-control"
-            defaultValue="2026-01-23"
+            onChange={(e) => onDateChange(e.target.value)}
           />
-          <p className="form-text mt-2 text-muted">
-            Consulta los horarios disponibles para agendar.
-          </p>
         </div>
       </div>
     </div>

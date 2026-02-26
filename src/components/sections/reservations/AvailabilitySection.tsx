@@ -4,42 +4,68 @@ import { useState, useEffect } from "react";
 import type { Schedule } from "./Schedule";
 
 function AvailabilitySection() {
-  const [myAppointments, setMyAppointments] = useState<Schedule[]>([]);
+  const [schedules, setSchedules] = useState<Schedule[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
 
-  // 1. Envolvemos la lógica en un useEffect con dependencia vacía
+  // Efecto que se dispara cada vez que selectedDate cambia
   useEffect(() => {
-    // Definimos la función de carga
-    const loadAppointments = () => {
-      const mockData: Schedule[] = [
-        { id: "1", start: "10:00 AM", end: "10:30 AM", available: false },
-        { id: "2", start: "11:00 AM", end: "11:30 AM", available: false },
-      ];
+    if (!selectedDate) return;
 
-      // Solo actualizamos el estado si los datos son diferentes o es la primera carga
-      setMyAppointments(mockData);
+    const fetchAvailability = async () => {
+      try {
+        const response = await fetch(`TU_URL/schedule?date=${selectedDate}`);
+        const data = await response.json();
+        setSchedules(data);
+      } catch (error) {
+        console.error("Error cargando horarios", error);
+      }
     };
 
-    loadAppointments();
-  }, []);
-  const pick = (id: string) => {
-    console.log("Editando:", id);
+    fetchAvailability();
+  }, [selectedDate]);
+
+  // Función para CREAR la cita (el segundo endpoint que mencionaste)
+  const pick = async (scheduleId: number) => {
+    const token = localStorage.getItem("token");
+
+    try {
+      const response = await fetch("TU_URL/appointments", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ scheduleId }),
+      });
+
+      if (response.ok) {
+        alert("Cita agendada con éxito");
+        // Opcional: Refrescar la lista para que ese horario ya no salga
+        setSchedules(schedules.filter((s) => s.id !== scheduleId));
+      } else {
+        const err = await response.json();
+        alert(err.message || "Error al agendar");
+      }
+    } catch (error) {
+      alert("Error de conexión");
+      console.error(error);
+    }
   };
+
   return (
     <div className="container mt-5">
       <div className="row">
-        <CalendarCard />
+        <CalendarCard onDateChange={setSelectedDate} />
         <ScheduleListCard
-          title="Disponibles"
-          schedules={myAppointments}
+          title={`Disponibles para ${selectedDate}`}
+          schedules={schedules}
           renderActions={(item: Schedule) => (
-            <div className="btn-group">
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={() => pick(item.id)}
-              >
-                Elegir
-              </button>
-            </div>
+            <button
+              className="btn btn-primary btn-sm"
+              onClick={() => pick(item.id)}
+            >
+              Elegir
+            </button>
           )}
         />
       </div>
