@@ -1,62 +1,111 @@
 import { useState, useEffect } from "react";
 import type { Schedule } from "./Schedule";
 import ScheduleListCard from "./ScheduleListCard";
+import CalendarCard from "./CalendarCard";
 
 function EditSection() {
   const [myAppointments, setMyAppointments] = useState<Schedule[]>([]);
+  // Estado para controlar qué cita se está editando
+  const [editingAppointmentId, setEditingAppointmentId] = useState<
+    number | null
+  >(null);
 
-  // 1. Envolvemos la lógica en un useEffect con dependencia vacía
+  // Estados para la búsqueda de NUEVOS horarios (reutilizados)
+  const [availableSchedules, setAvailableSchedules] = useState<Schedule[]>([]);
+  const [selectedDate, setSelectedDate] = useState<string>("");
+
+  // 1. Efecto para cargar los NUEVOS horarios cuando el usuario elige fecha al editar
   useEffect(() => {
-    // Definimos la función de carga
-    const loadAppointments = () => {
-      const mockData: Schedule[] = [
-        { id: "1", start: "10:00 AM", end: "10:30 AM", available: false },
-        { id: "2", start: "11:00 AM", end: "11:30 AM", available: false },
-      ];
-
-      // Solo actualizamos el estado si los datos son diferentes o es la primera carga
-      setMyAppointments(mockData);
+    if (!selectedDate) return;
+    const fetchNewSchedules = async () => {
+      const response = await fetch(`url/schedule?date=${selectedDate}`);
+      const data = await response.json();
+      setAvailableSchedules(data);
     };
+    fetchNewSchedules();
+  }, [selectedDate]);
 
-    loadAppointments();
-  }, []); // <--- El array vacío es VITAL para que solo corra UNA vez
+  // 2. Función para GUARDAR los cambios (El PUT/PATCH a tu API)
+  const handleUpdate = async (newScheduleId: number) => {
+    const token = localStorage.getItem("token");
+    try {
+      const response = await fetch(`url/appointments/${editingAppointmentId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ scheduleId: newScheduleId }),
+      });
 
-  const handleEdit = (id: string) => {
-    console.log("Editando:", id);
+      if (response.ok) {
+        const updatedAppointment = await response.json(); // La cita con el nuevo horario
+
+        // Magia de React: Actualizamos solo la cita que cambió
+        setMyAppointments(
+          myAppointments.map((appointment) =>
+            appointment.id === editingAppointmentId
+              ? updatedAppointment
+              : appointment,
+          ),
+        );
+
+        alert("Cita reprogramada!");
+        setEditingAppointmentId(null); // Esto nos regresa a la lista
+      }
+    } catch (error) {
+      console.error("Error al actualizar", error);
+    }
   };
 
-  const handleDelete = (id: string) => {
-    // Para evitar problemas de renderizado, usamos la versión funcional de setState
-    setMyAppointments((prev) => prev.filter((app) => app.id !== id));
-  };
+  // RENDERIZADO CONDICIONAL
+  if (editingAppointmentId) {
+    return (
+      <div className="container mt-4">
+        <h3>Reprogramar Cita #{editingAppointmentId}</h3>
+        <button
+          className="btn btn-link mb-3"
+          onClick={() => setEditingAppointmentId(null)}
+        >
+          ← Volver atrás
+        </button>
 
+        <div className="row">
+          {/* REUTILIZAMOS TUS COMPONENTES */}
+          <CalendarCard onDateChange={setSelectedDate} />
+
+          <ScheduleListCard
+            title="Selecciona el nuevo horario"
+            schedules={availableSchedules}
+            renderActions={(item) => (
+              <button
+                className="btn btn-success btn-sm"
+                onClick={() => handleUpdate(item.id)}
+              >
+                Confirmar Cambio
+              </button>
+            )}
+          />
+        </div>
+      </div>
+    );
+  }
+
+  // Si no estamos editando, mostramos la lista normal que ya tenías
   return (
     <div className="container mt-4">
-      {/* Si myAppointments está vacío, podrías mostrar un spinner o mensaje */}
-      {myAppointments.length === 0 ? (
-        <div className="text-center">Cargando citas...</div>
-      ) : (
-        <ScheduleListCard
-          title="Mis Citas"
-          schedules={myAppointments}
-          renderActions={(item: Schedule) => (
-            <div className="btn-group">
-              <button
-                className="btn btn-outline-secondary btn-sm"
-                onClick={() => handleEdit(item.id)}
-              >
-                Editar
-              </button>
-              <button
-                className="btn btn-outline-danger btn-sm"
-                onClick={() => handleDelete(item.id)}
-              >
-                Eliminar
-              </button>
-            </div>
-          )}
-        />
-      )}
+      <ScheduleListCard
+        title="Mis Citas"
+        schedules={myAppointments}
+        renderActions={(item) => (
+          <button
+            className="btn btn-warning btn-sm"
+            onClick={() => setEditingAppointmentId(item.id)}
+          >
+            Editar
+          </button>
+        )}
+      />
     </div>
   );
 }
