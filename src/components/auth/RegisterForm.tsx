@@ -27,20 +27,17 @@ function RegisterForm() {
       setError("Passwords do not match");
       return;
     }
-
+    const API_URL = import.meta.env.VITE_API_URL;
     try {
-      const response = await fetch(
-        "https://medicalproyect-production.up.railway.app/api/auth/register",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: formData.email,
-            password: formData.password,
-            name: formData.name,
-          }),
-        },
-      );
+      const response = await fetch(`${API_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+          name: formData.name,
+        }),
+      });
 
       const data = await response.json();
 
