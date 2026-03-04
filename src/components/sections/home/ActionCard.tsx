@@ -1,7 +1,7 @@
 type ActionCardProps = {
   title: string;
   description: string;
-  buttonText: string;
+  buttonText: string | null;
   sizeClass: string;
   onAction?: () => void;
 };
@@ -18,9 +18,11 @@ function ActionCard({
       <div className="card-body text-center">
         <h1 className={`${sizeClass} text-uppercase`}>{title}</h1>
         <p className="card-text">{description}</p>
-        <button className="btn btn-primary" onClick={onAction}>
-          {buttonText}
-        </button>
+        {buttonText && (
+          <button className="btn btn-primary" onClick={onAction}>
+            {buttonText}
+          </button>
+        )}
         <hr
           className="mx-auto"
           style={{ width: "50px", borderTop: "3px solid blue" }}
