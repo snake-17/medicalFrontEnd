@@ -9,6 +9,7 @@ function EditSection() {
   const [editingAppointmentId, setEditingAppointmentId] = useState<
     number | null
   >(null);
+  const API_URL = import.meta.env.VITE_API_URL;
 
   // Estados para la búsqueda de NUEVOS horarios (reutilizados)
   const [availableSchedules, setAvailableSchedules] = useState<Schedule[]>([]);
@@ -18,7 +19,7 @@ function EditSection() {
   useEffect(() => {
     if (!selectedDate) return;
     const fetchNewSchedules = async () => {
-      const response = await fetch(`url/schedule?date=${selectedDate}`);
+      const response = await fetch(`${API_URL}/schedule?date=${selectedDate}`);
       const data = await response.json();
       setAvailableSchedules(data);
     };
@@ -29,14 +30,17 @@ function EditSection() {
   const handleUpdate = async (newScheduleId: number) => {
     const token = localStorage.getItem("token");
     try {
-      const response = await fetch(`url/appointments/${editingAppointmentId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
+      const response = await fetch(
+        `${API_URL}/appointments/${editingAppointmentId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ scheduleId: newScheduleId }),
         },
-        body: JSON.stringify({ scheduleId: newScheduleId }),
-      });
+      );
 
       if (response.ok) {
         const updatedAppointment = await response.json(); // La cita con el nuevo horario

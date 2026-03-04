@@ -12,12 +12,10 @@ import AvailabilitySection from "../sections/reservations/AvailabilitySection";
 export const AppRouter = () => {
   return (
     <Routes>
-      {/* RUTAS PÚBLICAS */}
       <Route path="/" element={<HomePage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/register" element={<Register />} />
 
-      {/* GRUPO DE RUTAS PROTEGIDAS */}
       <Route element={<ProtectedRoute />}>
         <Route path="/profile" element={<Profile />} />
         <Route path="/editProfile" element={<EditProfile />} />
@@ -26,7 +24,6 @@ export const AppRouter = () => {
         <Route path="/availability" element={<AvailabilitySection />} />
       </Route>
 
-      {/* COMODÍN AL FINAL */}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

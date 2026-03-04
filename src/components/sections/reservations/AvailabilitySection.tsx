@@ -6,14 +6,16 @@ import type { Schedule } from "./Schedule";
 function AvailabilitySection() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
+  const API_URL = import.meta.env.VITE_API_URL;
 
-  // Efecto que se dispara cada vez que selectedDate cambia
   useEffect(() => {
     if (!selectedDate) return;
 
     const fetchAvailability = async () => {
       try {
-        const response = await fetch(`TU_URL/schedule?date=${selectedDate}`);
+        const response = await fetch(
+          `${API_URL}/schedule?date=${selectedDate}`,
+        );
         const data = await response.json();
         setSchedules(data);
       } catch (error) {
@@ -24,12 +26,11 @@ function AvailabilitySection() {
     fetchAvailability();
   }, [selectedDate]);
 
-  // Función para CREAR la cita (el segundo endpoint que mencionaste)
   const pick = async (scheduleId: number) => {
     const token = localStorage.getItem("token");
 
     try {
-      const response = await fetch("TU_URL/appointments", {
+      const response = await fetch(`${API_URL}/appointments`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -40,7 +41,7 @@ function AvailabilitySection() {
 
       if (response.ok) {
         alert("Cita agendada con éxito");
-        // Opcional: Refrescar la lista para que ese horario ya no salga
+
         setSchedules(schedules.filter((s) => s.id !== scheduleId));
       } else {
         const err = await response.json();
