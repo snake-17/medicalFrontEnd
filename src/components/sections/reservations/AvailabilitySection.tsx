@@ -2,11 +2,11 @@ import CalendarCard from "./CalendarCard";
 import ScheduleListCard from "./ScheduleListCard";
 import { useState, useEffect } from "react";
 import type { Schedule } from "./Schedule";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function AvailabilitySection() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
-  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!selectedDate) return;

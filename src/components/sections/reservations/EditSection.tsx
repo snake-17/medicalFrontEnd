@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import type { Schedule } from "./Schedule";
 import ScheduleListCard from "./ScheduleListCard";
 import CalendarCard from "./CalendarCard";
+const API_URL = import.meta.env.VITE_API_URL;
 
 function EditSection() {
   const [myAppointments, setMyAppointments] = useState<Schedule[]>([]);
@@ -9,7 +10,6 @@ function EditSection() {
   const [editingAppointmentId, setEditingAppointmentId] = useState<
     number | null
   >(null);
-  const API_URL = import.meta.env.VITE_API_URL;
 
   // Estados para la búsqueda de NUEVOS horarios (reutilizados)
   const [availableSchedules, setAvailableSchedules] = useState<Schedule[]>([]);
