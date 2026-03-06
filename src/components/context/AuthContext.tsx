@@ -12,7 +12,7 @@ export const AuthContext = createContext<AuthContextType | undefined>(
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUser] = useState<User | null>(() => {
-    const storedUser = localStorage.getItem("user");
+    const storedUser = localStorage.getItem("token");
     if (storedUser) {
       try {
         return JSON.parse(storedUser);
@@ -24,12 +24,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     return null;
   });
 
-  // Solo dejamos 'loading', sin el 'setLoading' para que el linter esté feliz
   const [loading] = useState(false);
 
   const login = (userData: User) => {
     setUser(userData);
-    localStorage.setItem("user", JSON.stringify(userData));
+    localStorage.setItem("token", JSON.stringify(userData));
   };
 
   const logout = () => {

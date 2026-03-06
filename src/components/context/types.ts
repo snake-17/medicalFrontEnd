@@ -2,8 +2,7 @@
 import { type ReactNode } from "react";
 
 export interface User {
-  name: string;
-  token?: string;
+  token: string;
 }
 
 export interface AuthContextType {

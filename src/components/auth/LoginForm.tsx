@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/useAuth";
 
 function LoginForm() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     email: "",
@@ -28,9 +30,11 @@ function LoginForm() {
         }),
       });
       const data = await response.json();
+
       if (response.ok) {
-        localStorage.setItem("token", data.token);
-        navigate("/");
+        login({ token: data.token });
+
+        navigate("/profile");
       } else {
         setError(data.error || data.message || "Something went wrong");
       }
