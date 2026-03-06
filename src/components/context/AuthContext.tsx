@@ -6,7 +6,6 @@ import {
   type AuthProviderProps,
 } from "./types";
 
-// Exportamos el contexto solo para que useAuth pueda leerlo
 export const AuthContext = createContext<AuthContextType | undefined>(
   undefined,
 );
@@ -17,12 +16,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     if (storedUser) {
       try {
         return JSON.parse(storedUser);
-      } catch {
+      } catch (error) {
+        console.error("Error parsing user", error);
         return null;
       }
     }
     return null;
   });
+
+  // Solo dejamos 'loading', sin el 'setLoading' para que el linter esté feliz
+  const [loading] = useState(false);
 
   const login = (userData: User) => {
     setUser(userData);
@@ -35,7 +38,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );
