@@ -26,30 +26,38 @@ function ScheduleListCard({
               </div>
             )}
 
-            {schedules.map((item) => (
-              <div
-                key={item.id}
-                className="list-group-item d-flex justify-content-between align-items-center p-3"
-              >
-                <div>
-                  <span
-                    className={`badge me-2 ${
-                      item.available
-                        ? "bg-success-subtle text-success border border-success-subtle"
-                        : "bg-secondary-subtle text-secondary border border-secondary-subtle"
-                    }`}
-                  >
-                    {item.available ? "Libre" : "Ocupado"}
-                  </span>
+            {schedules.map((item) => {
+              // Si la API no manda 'available', asumimos que es true (Libre)
+              // Si en el futuro la API manda 'available: false', se marcará como Ocupado
+              const isAvailable = item.available !== false;
 
-                  <strong>
-                    {item.start} - {item.end}
-                  </strong>
+              return (
+                <div
+                  key={item.id}
+                  className="list-group-item d-flex justify-content-between align-items-center p-3"
+                >
+                  <div>
+                    <span
+                      className={`badge me-2 ${
+                        isAvailable
+                          ? "bg-success-subtle text-success border border-success-subtle"
+                          : "bg-secondary-subtle text-secondary border border-secondary-subtle"
+                      }`}
+                    >
+                      {isAvailable ? "Libre" : "Ocupado"}
+                    </span>
+
+                    {/* CORRECCIÓN: Usar startTime y endTime en lugar de start y end */}
+                    <strong>
+                      {item.startTime} - {item.endTime}
+                    </strong>
+                  </div>
+
+                  {/* Solo mostramos el botón de "Elegir" si está disponible */}
+                  {isAvailable && renderActions && renderActions(item)}
                 </div>
-
-                {renderActions && renderActions(item)}
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       </div>
