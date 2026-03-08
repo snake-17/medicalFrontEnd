@@ -13,23 +13,13 @@ function AvailabilitySection() {
 
     const fetchAvailability = async () => {
       try {
-        console.log("Revisar: Fecha enviada al API:", selectedDate);
+        const url = `${API_URL}/api/reservations/schedule?date=${selectedDate}`;
+        const response = await fetch(url);
 
-        const response = await fetch(
-          `${API_URL}/schedule?date=${selectedDate}`,
-        );
-
-        if (!response.ok) {
-          throw new Error(`Error en el servidor: código ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
 
         const data = await response.json();
-        if (Array.isArray(data)) {
-          setSchedules(data);
-        } else {
-          console.error("El API no devolvió una lista, devolvió:", data);
-          setSchedules([]);
-        }
+        setSchedules(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error("Error cargando horarios:", error);
         setSchedules([]);
@@ -40,10 +30,16 @@ function AvailabilitySection() {
   }, [selectedDate]);
 
   const pick = async (scheduleId: number) => {
-    const token = localStorage.getItem("token");
+    const storedData = localStorage.getItem("token");
+    if (!storedData) {
+      alert("No hay sesión activa. Por favor, inicia sesión.");
+      return;
+    }
 
     try {
-      const response = await fetch(`${API_URL}/appointments`, {
+      const parsed = JSON.parse(storedData);
+      const token = typeof parsed === "object" ? parsed.token : parsed;
+      const response = await fetch(`${API_URL}/api/reservations/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -54,14 +50,13 @@ function AvailabilitySection() {
 
       if (response.ok) {
         alert("Cita agendada con éxito");
-
-        setSchedules(schedules.filter((s) => s.id !== scheduleId));
+        setSchedules((prev) => prev.filter((s) => s.id !== scheduleId));
       } else {
         const err = await response.json();
         alert(err.message || "Error al agendar");
       }
     } catch (error) {
-      alert("Error de conexión");
+      alert("Error en la operación");
       console.error(error);
     }
   };
@@ -70,8 +65,9 @@ function AvailabilitySection() {
     <div className="container mt-5">
       <div className="row">
         <CalendarCard onDateChange={setSelectedDate} />
+
         <ScheduleListCard
-          title={`Disponibles para ${selectedDate}`}
+          title={`Disponibles para ${selectedDate || "seleccionar fecha"}`}
           schedules={schedules}
           renderActions={(item: Schedule) => (
             <button
@@ -86,4 +82,5 @@ function AvailabilitySection() {
     </div>
   );
 }
+
 export default AvailabilitySection;
