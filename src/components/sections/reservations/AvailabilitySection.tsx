@@ -13,13 +13,26 @@ function AvailabilitySection() {
 
     const fetchAvailability = async () => {
       try {
+        console.log("Revisar: Fecha enviada al API:", selectedDate);
+
         const response = await fetch(
           `${API_URL}/schedule?date=${selectedDate}`,
         );
+
+        if (!response.ok) {
+          throw new Error(`Error en el servidor: código ${response.status}`);
+        }
+
         const data = await response.json();
-        setSchedules(data);
+        if (Array.isArray(data)) {
+          setSchedules(data);
+        } else {
+          console.error("El API no devolvió una lista, devolvió:", data);
+          setSchedules([]);
+        }
       } catch (error) {
-        console.error("Error cargando horarios", error);
+        console.error("Error cargando horarios:", error);
+        setSchedules([]);
       }
     };
 
