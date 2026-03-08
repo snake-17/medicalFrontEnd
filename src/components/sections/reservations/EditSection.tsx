@@ -36,17 +36,14 @@ function EditSection() {
 
       try {
         // OJO: Asegúrate de que esta URL es la correcta en tu API para ver las citas del usuario
-        const response = await fetch(
-          `${API_URL}/api/reservations/appointments`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`,
-              "ngrok-skip-browser-warning": "true",
-            },
+        const response = await fetch(`${API_URL}/api/reservations/`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
           },
-        );
+        });
 
         if (response.ok) {
           const data = await response.json();
@@ -104,7 +101,7 @@ function EditSection() {
     try {
       // CORREGIDO: URL completa y headers de ngrok
       const response = await fetch(
-        `${API_URL}/api/reservations/appointments/${editingAppointmentId}`,
+        `${API_URL}/api/reservations/${editingAppointmentId}`,
         {
           method: "PUT",
           headers: {
