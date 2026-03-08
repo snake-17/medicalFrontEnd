@@ -13,13 +13,44 @@ function AvailabilitySection() {
 
     const fetchAvailability = async () => {
       try {
-        const url = `${API_URL}/api/reservations/schedule?date=${selectedDate}`;
-        const response = await fetch(url);
+        // 1. Sacamos el token igual que en la función pick
+        const storedData = localStorage.getItem("token");
+        if (!storedData) {
+          console.warn("No hay token, no se pueden pedir los horarios.");
+          return;
+        }
 
-        if (!response.ok) throw new Error(`Status: ${response.status}`);
+        const parsed = JSON.parse(storedData);
+        const token = typeof parsed === "object" ? parsed.token : parsed;
 
+        console.log("Revisar: Fecha enviada al API:", selectedDate);
+
+        const response = await fetch(
+          `${API_URL}/api/reservations/schedule?date=${selectedDate}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`, // Enviamos el pasaporte
+              "ngrok-skip-browser-warning": "true", // El truco mágico para saltar la alerta de ngrok
+            },
+          },
+        );
+
+        if (!response.ok) {
+          // Si el backend da error (ej. 401 o 403), lo atrapamos antes de hacer .json()
+          throw new Error(`Error en el servidor: código ${response.status}`);
+        }
+
+        // Aquí ya estamos seguros de que pasamos ngrok y el backend nos aceptó
         const data = await response.json();
-        setSchedules(Array.isArray(data) ? data : []);
+
+        if (Array.isArray(data)) {
+          setSchedules(data);
+        } else {
+          console.error("El API no devolvió una lista, devolvió:", data);
+          setSchedules([]);
+        }
       } catch (error) {
         console.error("Error cargando horarios:", error);
         setSchedules([]);
