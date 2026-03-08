@@ -58,7 +58,8 @@ function AvailabilitySection() {
         }
 
         const data = await response.json();
-
+        console.log("Respuesta completa de la API:");
+        console.table(data);
         if (Array.isArray(data)) {
           setSchedules(data);
         } else {
