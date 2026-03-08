@@ -2,27 +2,44 @@ import CalendarCard from "./CalendarCard";
 import ScheduleListCard from "./ScheduleListCard";
 import { useState, useEffect } from "react";
 import type { Schedule } from "./Schedule";
+
 const API_URL = import.meta.env.VITE_API_URL;
 
 function AvailabilitySection() {
   const [schedules, setSchedules] = useState<Schedule[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
+  const getCleanToken = () => {
+    const storedData = localStorage.getItem("token");
+    if (!storedData) return null;
+
+    try {
+      const parsed = JSON.parse(storedData);
+      if (parsed && typeof parsed === "object") {
+        return parsed.token || null;
+      }
+      return parsed;
+    } catch {
+      return storedData;
+    }
+  };
+
   useEffect(() => {
     if (!selectedDate) return;
 
     const fetchAvailability = async () => {
       try {
-        const storedData = localStorage.getItem("token");
-        if (!storedData) {
+        const token = getCleanToken();
+        if (!token) {
           console.warn("No hay token, asegúrate de haber iniciado sesión.");
           return;
         }
 
-        const parsed = JSON.parse(storedData);
-        const token = typeof parsed === "object" ? parsed.token : parsed;
-
         console.log("Revisar: Fecha enviada al API:", selectedDate);
+        console.log(
+          "Token limpio enviado (primeros 15 caracteres):",
+          token.substring(0, 15) + "...",
+        );
 
         const response = await fetch(
           `${API_URL}/api/reservations/schedule?date=${selectedDate}`,
@@ -58,16 +75,13 @@ function AvailabilitySection() {
   }, [selectedDate]);
 
   const pick = async (scheduleId: number) => {
-    const storedData = localStorage.getItem("token");
-    if (!storedData) {
+    const token = getCleanToken();
+    if (!token) {
       alert("No hay sesión activa. Por favor, inicia sesión.");
       return;
     }
 
     try {
-      const parsed = JSON.parse(storedData);
-      const token = typeof parsed === "object" ? parsed.token : parsed;
-
       const response = await fetch(`${API_URL}/api/reservations/`, {
         method: "POST",
         headers: {

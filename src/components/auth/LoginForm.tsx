@@ -32,9 +32,9 @@ function LoginForm() {
       const data = await response.json();
 
       if (response.ok) {
-        login({ token: data.token });
+        login(data.token);
 
-        navigate("/profile");
+        navigate("/");
       } else {
         setError(data.error || data.message || "Something went wrong");
       }
