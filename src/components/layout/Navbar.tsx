@@ -36,7 +36,8 @@ function Navbar() {
                   Profile
                 </NavLink>
                 <button
-                  className="nav-link btn btn-link"
+                  className="nav-link btn btn-link border-0 text-start"
+                  style={{ cursor: "pointer" }}
                   onClick={() => {
                     logout();
                     navigate("/");
