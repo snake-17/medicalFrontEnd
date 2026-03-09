@@ -13,7 +13,6 @@ function EditSection() {
   const [availableSchedules, setAvailableSchedules] = useState<Schedule[]>([]);
   const [selectedDate, setSelectedDate] = useState<string>("");
 
-  // Reutilizamos nuestra función a prueba de balas para el token
   const getCleanToken = () => {
     const storedData = localStorage.getItem("token");
     if (!storedData) return null;
@@ -28,14 +27,12 @@ function EditSection() {
     }
   };
 
-  // 1. EL EFECTO FALTANTE: Cargar "Mis Citas" al abrir la sección
   useEffect(() => {
     const fetchMyAppointments = async () => {
       const token = getCleanToken();
       if (!token) return;
 
       try {
-        // OJO: Asegúrate de que esta URL es la correcta en tu API para ver las citas del usuario
         const response = await fetch(`${API_URL}/api/reservations/`, {
           method: "GET",
           headers: {
@@ -57,9 +54,7 @@ function EditSection() {
     };
 
     fetchMyAppointments();
-  }, []); // El array vacío asegura que solo se ejecute al entrar a la sección
-
-  // 2. Efecto para cargar los NUEVOS horarios cuando el usuario elige fecha al editar
+  }, []);
   useEffect(() => {
     if (!selectedDate) return;
 
@@ -68,7 +63,6 @@ function EditSection() {
       if (!token) return;
 
       try {
-        // CORREGIDO: URL completa y headers de ngrok/token
         const response = await fetch(
           `${API_URL}/api/reservations/schedule?date=${selectedDate}`,
           {
@@ -92,14 +86,11 @@ function EditSection() {
 
     fetchNewSchedules();
   }, [selectedDate]);
-
-  // 3. Función para GUARDAR los cambios (PUT/PATCH)
   const handleUpdate = async (newScheduleId: number) => {
     const token = getCleanToken();
     if (!token) return;
 
     try {
-      // CORREGIDO: URL completa y headers de ngrok
       const response = await fetch(
         `${API_URL}/api/reservations/${editingAppointmentId}`,
         {
@@ -116,7 +107,6 @@ function EditSection() {
       if (response.ok) {
         const updatedAppointment = await response.json();
 
-        // Actualizamos la lista local
         setMyAppointments(
           myAppointments.map((appointment) =>
             appointment.id === editingAppointmentId
@@ -136,8 +126,43 @@ function EditSection() {
       alert("Error de conexión al actualizar");
     }
   };
+  const handleDelete = async (appointmentId: number) => {
+    const confirmDelete = window.confirm(
+      "¿Estás seguro de que deseas cancelar esta cita?",
+    );
+    if (!confirmDelete) return;
 
-  // RENDERIZADO CONDICIONAL
+    const token = getCleanToken();
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `${API_URL}/api/reservations/${appointmentId}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "ngrok-skip-browser-warning": "true",
+          },
+        },
+      );
+      if (response.status === 204) {
+        alert("Cita cancelada correctamente.");
+
+        setMyAppointments(
+          myAppointments.filter((app) => app.id !== appointmentId),
+        );
+      } else {
+        const errorData = await response.text();
+        alert(
+          `Error al cancelar la cita (Código ${response.status}): ${errorData}`,
+        );
+      }
+    } catch (error) {
+      console.error("Error al eliminar", error);
+      alert("Error de conexión al intentar cancelar la cita");
+    }
+  };
   if (editingAppointmentId) {
     return (
       <div className="container mt-4">
@@ -174,12 +199,20 @@ function EditSection() {
         title="Mis Citas"
         schedules={myAppointments}
         renderActions={(item) => (
-          <button
-            className="btn btn-warning btn-sm"
-            onClick={() => setEditingAppointmentId(item.id)}
-          >
-            Editar
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              className="btn btn-warning btn-sm"
+              onClick={() => setEditingAppointmentId(item.id)}
+            >
+              Editar
+            </button>
+            <button
+              className="btn btn-danger btn-sm"
+              onClick={() => handleDelete(item.id)}
+            >
+              Eliminar
+            </button>
+          </div>
         )}
       />
     </div>
