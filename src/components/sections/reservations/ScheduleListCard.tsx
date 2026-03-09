@@ -27,8 +27,6 @@ function ScheduleListCard({
             )}
 
             {schedules.map((item) => {
-              // Si la API no manda 'available', asumimos que es true (Libre)
-              // Si en el futuro la API manda 'available: false', se marcará como Ocupado
               const isAvailable = item.available !== false;
 
               return (

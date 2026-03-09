@@ -127,10 +127,10 @@ function EditSection() {
     }
   };
   const handleDelete = async (appointmentId: number) => {
-    const confirmDelete = window.confirm(
-      "¿Estás seguro de que deseas cancelar esta cita?",
-    );
-    if (!confirmDelete) return;
+    // const confirmDelete = window.confirm(
+    //   "¿Estás seguro de que deseas cancelar esta cita?",
+    // );
+    // if (!confirmDelete) return;
 
     const token = getCleanToken();
     if (!token) return;
